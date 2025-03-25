@@ -1,0 +1,3 @@
+H1,Chennai,50000.0,2,Ragul
+h2,trichy,80000.0,4,Muthu
+h3,bangalore,60000.0,5,sabarish

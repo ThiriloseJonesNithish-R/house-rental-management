@@ -1,0 +1,3 @@
+t1,Thirilose,6380587231,chennai
+t2,Shravan,shravan@gmail.com,trichy
+t3,rishi,rishi@gmail.com,bangalore
