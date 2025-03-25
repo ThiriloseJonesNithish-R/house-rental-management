@@ -438,9 +438,10 @@ public class HouseRentalApp {
         try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine().trim();
+                System.out.println("Reading line: " + line); // Debug line
                 if (!line.isEmpty()) {
                     String[] data = line.split(",");
-                    if (data.length >= 6) {
+                    if (data.length >= 7) { // Changed from 6 to 7
                         House house = houses.stream()
                                 .filter(h -> h.getId().equalsIgnoreCase(data[0]))
                                 .findFirst().orElse(null);
@@ -453,21 +454,24 @@ public class HouseRentalApp {
                                 RentalAgreement agreement = new RentalAgreement(
                                         house,
                                         tenant,
-                                        LocalDate.parse(data[2]),
-                                        LocalDate.parse(data[3]),
-                                        Double.parseDouble(data[4]));
+                                        LocalDate.parse(data[3]), // Changed from data[2]
+                                        LocalDate.parse(data[4]), // Changed from data[3]
+                                        Double.parseDouble(data[5])); // Changed from data[4]
 
-                                // Remove duplicate dates
+                                // Parse payment dates from the last element
+                                String[] dueDates = data[6].split(";"); // Changed from data[5]
                                 Set<LocalDate> uniqueDates = new TreeSet<>();
-                                String[] dueDates = data[5].split(";");
                                 for (String dueDate : dueDates) {
                                     uniqueDates.add(LocalDate.parse(dueDate));
                                 }
                                 agreement.getPaymentDueDates().clear();
                                 agreement.getPaymentDueDates().addAll(uniqueDates);
                                 agreements.add(agreement);
+                                System.out.println("Successfully loaded agreement for house: " + house.getId()); // Debug
+                                                                                                                 // line
                             } catch (Exception e) {
                                 System.out.println("Error parsing agreement data: " + e.getMessage());
+                                e.printStackTrace();
                             }
                         } else {
                             if (house == null)
@@ -475,6 +479,8 @@ public class HouseRentalApp {
                             if (tenant == null)
                                 System.out.println("Tenant not found: " + data[1]);
                         }
+                    } else {
+                        System.out.println("Invalid agreement data format: " + line);
                     }
                 }
             }
@@ -554,11 +560,10 @@ public class HouseRentalApp {
     }
 
     private static void cleanupAgreements() {
-        System.out.println("Cleaning up agreements file...");
+        System.out.println("Cleaning up agreements...");
         Set<RentalAgreement> uniqueAgreements = new LinkedHashSet<>(agreements);
         agreements.clear();
         agreements.addAll(uniqueAgreements);
-        saveAgreements();
-        System.out.println("Agreements file cleaned.");
+        System.out.println("Agreements cleaned.");
     }
 }
