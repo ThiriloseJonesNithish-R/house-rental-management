@@ -141,9 +141,9 @@ public class HouseRentalApp {
     private static List<House> houses = new ArrayList<>();
     private static List<Tenant> tenants = new ArrayList<>();
     private static List<RentalAgreement> agreements = new ArrayList<>();
-    private static final String HOUSES_FILE_NAME = "houses.txt";
-    private static final String TENANTS_FILE_NAME = "tenants.txt";
-    private static final String AGREEMENTS_FILE_NAME = "agreements.txt";
+    private static final String HOUSES_FILE_NAME = "../resources/houses.txt";
+    private static final String TENANTS_FILE_NAME = "../resources/tenants.txt";
+    private static final String AGREEMENTS_FILE_NAME = "../resources/agreements.txt";
 
     public static void main(String[] args) {
         loadHouses();
