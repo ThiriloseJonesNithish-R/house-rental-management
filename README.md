@@ -22,6 +22,6 @@ The **House Rental Management System** is a Java-based console application desig
 
 1. **Clone the Repository:**
    ```sh
-   git clone https://github.com/YOUR_USERNAME/house-rental-management.git
+   git clone https://github.com/ThiriloseJonesNithish-R/house-rental-management.git
    cd house-rental-management
    ```
