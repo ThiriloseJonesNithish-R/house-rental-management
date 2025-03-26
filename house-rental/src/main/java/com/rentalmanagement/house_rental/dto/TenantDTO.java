@@ -1,8 +1,14 @@
 package com.rentalmanagement.house_rental.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TenantDTO {
     private Long id;
     private String name;

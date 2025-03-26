@@ -11,5 +11,6 @@ public interface RentalAgreementService {
 
     List<RentalAgreementDTO> getUpcomingPayments(LocalDate date);
 
-    void recordPayment(Long agreementId, double amount);
+    // ✅ Fix: Change method signature to match the implementation
+    void recordPayment(Long agreementId, LocalDate date, double amount);
 }

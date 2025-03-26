@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +21,14 @@ public class HouseServiceImpl implements HouseService {
     @Override
     @Transactional
     public HouseDTO addHouse(HouseDTO houseDTO) {
+        // Check for duplicate before saving
+        Optional<House> existingHouse = houseRepository.findByLocationAndPriceAndOwner(
+                houseDTO.getLocation(), houseDTO.getPrice(), houseDTO.getOwner());
+
+        if (existingHouse.isPresent()) {
+            throw new IllegalStateException("A house with the same details already exists.");
+        }
+
         House house = new House();
         house.setLocation(houseDTO.getLocation());
         house.setPrice(houseDTO.getPrice());
@@ -32,7 +41,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public void removeHouse(Long id) { // Ensure the parameter type is Long
+    public void removeHouse(Long id) {
         houseRepository.deleteById(id);
     }
 
@@ -51,19 +60,14 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public HouseDTO getHouseById(Long id) { // Ensure the parameter type is Long
+    public HouseDTO getHouseById(Long id) {
         House house = houseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("House not found"));
         return convertToDTO(house);
     }
 
     private HouseDTO convertToDTO(House house) {
-        HouseDTO dto = new HouseDTO();
-        dto.setId(house.getId());
-        dto.setLocation(house.getLocation());
-        dto.setPrice(house.getPrice());
-        dto.setBedrooms(house.getBedrooms());
-        dto.setOwner(house.getOwner());
-        return dto;
+        return new HouseDTO(house.getId(), house.getLocation(), house.getPrice(), house.getBedrooms(),
+                house.getOwner());
     }
 }

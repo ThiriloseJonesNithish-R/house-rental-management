@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/rental-agreements")
@@ -34,10 +36,20 @@ public class RentalAgreementController {
     }
 
     @PostMapping("/{id}/payments")
-    public ResponseEntity<Void> recordPayment(
+    public ResponseEntity<Map<String, String>> recordPayment(
             @PathVariable("id") Long agreementId,
-            @RequestParam double amount) {
-        rentalAgreementService.recordPayment(agreementId, amount);
-        return ResponseEntity.ok().build();
+            @RequestBody Map<String, Object> paymentData) { // ✅ Accepts JSON body
+
+        double amount = Double.parseDouble(paymentData.get("amount").toString());
+        LocalDate date = LocalDate.parse(paymentData.get("date").toString());
+
+        rentalAgreementService.recordPayment(agreementId, date, amount);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Payment recorded successfully");
+
+        return ResponseEntity.ok(response);
     }
+
 }

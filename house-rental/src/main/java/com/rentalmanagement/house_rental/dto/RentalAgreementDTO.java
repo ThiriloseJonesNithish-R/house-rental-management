@@ -1,10 +1,17 @@
 package com.rentalmanagement.house_rental.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor // ✅ This generates the required constructor automatically
 public class RentalAgreementDTO {
     private Long id;
     private Long houseId;
@@ -13,4 +20,5 @@ public class RentalAgreementDTO {
     private LocalDate endDate;
     private double deposit;
     private List<LocalDate> paymentDueDates;
+    private Map<LocalDate, Double> payments; // ✅ Payments stored with date mapping
 }

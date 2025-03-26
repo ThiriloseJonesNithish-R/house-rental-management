@@ -12,8 +12,10 @@ import com.rentalmanagement.house_rental.service.RentalAgreementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,12 @@ public class RentalAgreementServiceImpl implements RentalAgreementService {
 
         Tenant tenant = tenantRepository.findById(agreementDTO.getTenantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Tenant not found"));
+
+        Optional<RentalAgreement> existingAgreement = rentalAgreementRepository.findByHouseIdAndTenantId(house.getId(),
+                tenant.getId());
+        if (existingAgreement.isPresent()) {
+            throw new IllegalStateException("Rental agreement already exists for this house and tenant.");
+        }
 
         RentalAgreement agreement = new RentalAgreement();
         agreement.setHouse(house);
@@ -65,22 +73,24 @@ public class RentalAgreementServiceImpl implements RentalAgreementService {
 
     @Override
     @Transactional
-    public void recordPayment(Long agreementId, double amount) {
+    public void recordPayment(Long agreementId, LocalDate date, double amount) {
         RentalAgreement agreement = rentalAgreementRepository.findById(agreementId)
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
-        agreement.recordPayment(amount);
+
+        agreement.recordPayment(date, amount);
         rentalAgreementRepository.save(agreement);
     }
 
     private RentalAgreementDTO convertToDTO(RentalAgreement agreement) {
-        RentalAgreementDTO dto = new RentalAgreementDTO();
-        dto.setId(agreement.getId());
-        dto.setHouseId(agreement.getHouse().getId());
-        dto.setTenantId(agreement.getTenant().getId());
-        dto.setStartDate(agreement.getStartDate());
-        dto.setEndDate(agreement.getEndDate());
-        dto.setDeposit(agreement.getDeposit());
-        dto.setPaymentDueDates(agreement.getPaymentDueDates());
-        return dto;
+        return new RentalAgreementDTO(
+                agreement.getId(),
+                agreement.getHouse().getId(),
+                agreement.getTenant().getId(),
+                agreement.getStartDate(),
+                agreement.getEndDate(),
+                agreement.getDeposit(),
+                agreement.getPaymentDueDates(),
+                agreement.getPayments() // ✅ Fix: Include payments
+        );
     }
 }

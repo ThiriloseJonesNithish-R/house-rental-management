@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,14 +21,21 @@ public class TenantServiceImpl implements TenantService {
     @Override
     @Transactional
     public TenantDTO addTenant(TenantDTO tenantDTO) {
-        Tenant tenant = new Tenant();
-        tenant.setName(tenantDTO.getName());
-        tenant.setContact(tenantDTO.getContact());
-        tenant.setPreferredLocation(tenantDTO.getPreferredLocation());
+        Optional<Tenant> existingTenant = tenantRepository.findByNameAndContact(
+                tenantDTO.getName(), tenantDTO.getContact());
+
+        if (existingTenant.isPresent()) {
+            throw new IllegalStateException("A tenant with the same details already exists.");
+        }
+
+        Tenant tenant = new Tenant(
+                null, // ID will be auto-generated
+                tenantDTO.getName(),
+                tenantDTO.getContact(),
+                tenantDTO.getPreferredLocation());
 
         tenant = tenantRepository.save(tenant);
-        tenantDTO.setId(tenant.getId());
-        return tenantDTO;
+        return new TenantDTO(tenant.getId(), tenant.getName(), tenant.getContact(), tenant.getPreferredLocation());
     }
 
     @Override
@@ -38,18 +46,13 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public TenantDTO getTenantById(Long id) { // Ensure the parameter type is Long
+    public TenantDTO getTenantById(Long id) {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tenant not found"));
         return convertToDTO(tenant);
     }
 
     private TenantDTO convertToDTO(Tenant tenant) {
-        TenantDTO dto = new TenantDTO();
-        dto.setId(tenant.getId());
-        dto.setName(tenant.getName());
-        dto.setContact(tenant.getContact());
-        dto.setPreferredLocation(tenant.getPreferredLocation());
-        return dto;
+        return new TenantDTO(tenant.getId(), tenant.getName(), tenant.getContact(), tenant.getPreferredLocation());
     }
 }
