@@ -2,11 +2,13 @@ package com.rentalmanagement.house_rental;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-public class HouseRentalApplication {
+@ComponentScan(basePackages = "com.rentalmanagement.house_rental")
 
-	public static void main(String[] args) {
-		SpringApplication.run(HouseRentalApplication.class, args);
-	}
+public class HouseRentalApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(HouseRentalApplication.class, args);
+    }
 }
