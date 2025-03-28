@@ -8,7 +8,6 @@ import com.rentalmanagement.house_rental.entity.User;
 import com.rentalmanagement.house_rental.repository.UserRepository;
 import com.rentalmanagement.house_rental.utils.JwtUtil;
 import com.rentalmanagement.house_rental.service.AuthService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,37 +23,41 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered!");
+            throw new RuntimeException("Email is already registered!");
         }
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        // Convert role String to enum safely
+        // Convert role safely
+        Role userRole;
         try {
-            user.setRole(Role.valueOf(request.getRole().toString().toUpperCase()));
-
+            userRole = Role.valueOf(request.getRole().toString().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid role provided!");
+            throw new RuntimeException("Invalid role provided! Choose either OWNER or TENANT.");
         }
+
+        // Create user and set username to email (since email is our identifier)
+        User user = User.builder()
+                .username(request.getEmail())  // This line ensures the username is set
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(userRole)
+                .build();
 
         userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getRole().name());
+        return new AuthResponse(token, user.getRole().toString().toUpperCase());
     }
 
     @Override
     public AuthResponse login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found!"));
+                .orElseThrow(() -> new RuntimeException("User not found with this email!"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials!");
+            throw new RuntimeException("Invalid credentials! Please check your email or password.");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail()); // ✅ Fix generateToken issue
-        return new AuthResponse(token, user.getRole().name()); // ✅ Ensure correct response format
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(token, user.getRole().toString().toUpperCase());
     }
 }
