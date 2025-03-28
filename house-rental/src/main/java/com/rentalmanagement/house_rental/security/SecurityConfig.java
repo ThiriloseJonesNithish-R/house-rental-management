@@ -4,6 +4,7 @@ import com.rentalmanagement.house_rental.service.impl.CustomUserDetailsService;
 import com.rentalmanagement.house_rental.utils.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,13 +34,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Use the bean below
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        // ✅ Only POST allowed for login, GET blocked
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/login").denyAll() // ❌ Block GET login
+
+                        // ✅ Register remains open
+                        .requestMatchers("/api/auth/register").permitAll()
+
+                        // ✅ Allow house search & details for everyone
+                        .requestMatchers(HttpMethod.GET, "/api/houses", "/api/houses/search", "/api/houses/{id}").permitAll()
+
+                        // 🔐 Secure all other API endpoints
                         .requestMatchers("/api/**").authenticated()
-                        .requestMatchers("/**").permitAll()
-                )
+
+                        // ✅ Allow other public pages
+                        .requestMatchers("/**").permitAll())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -50,7 +62,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -68,7 +81,7 @@ public class SecurityConfig {
         config.addAllowedOriginPattern("*"); // ✅ ALLOW ANY ORIGIN
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*")); // Or specify "Authorization", "Content-Type"
-        config.setAllowCredentials(true);       // If you need cookies/sessions; otherwise false
+        config.setAllowCredentials(true); // If you need cookies/sessions; otherwise false
 
         source.registerCorsConfiguration("/**", config);
         return source;

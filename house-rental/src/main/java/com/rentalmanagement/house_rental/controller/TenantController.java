@@ -17,8 +17,8 @@ public class TenantController {
     }
 
     @PostMapping
-    public ResponseEntity<TenantDTO> addTenant(@RequestBody TenantDTO tenantDTO) {
-        return ResponseEntity.ok(tenantService.addTenant(tenantDTO));
+    public ResponseEntity<TenantDTO> addTenant(@RequestParam Long userId, @RequestBody TenantDTO tenantDTO) {
+        return ResponseEntity.ok(tenantService.addTenant(userId, tenantDTO)); // ✅ Pass userId
     }
 
     @GetMapping
@@ -27,7 +27,12 @@ public class TenantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TenantDTO> getTenantById(@PathVariable Long id) { // Ensure the parameter type is Long
+    public ResponseEntity<TenantDTO> getTenantById(@PathVariable Long id) { 
         return ResponseEntity.ok(tenantService.getTenantById(id));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<TenantDTO> getTenantByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(tenantService.getTenantByUserId(userId));
     }
 }

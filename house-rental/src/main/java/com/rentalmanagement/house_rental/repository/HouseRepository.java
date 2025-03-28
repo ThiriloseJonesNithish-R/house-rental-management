@@ -9,6 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface HouseRepository extends JpaRepository<House, Long> {
+    List<House> findByLocation(String location);
+
     List<House> findByLocationAndPriceLessThanEqual(String location, double maxPrice);
 
     Optional<House> findByLocationAndPriceAndOwner(String location, double price, String owner);

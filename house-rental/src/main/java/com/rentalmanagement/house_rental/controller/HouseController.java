@@ -36,8 +36,14 @@ public class HouseController {
     @GetMapping("/search")
     public ResponseEntity<List<HouseDTO>> searchHouses(
             @RequestParam String location,
-            @RequestParam double maxPrice) {
-        return ResponseEntity.ok(houseService.searchHouses(location, maxPrice));
+            @RequestParam(required = false) Double maxPrice) { // ✅ Made maxPrice OPTIONAL
+        List<HouseDTO> houses;
+        if (maxPrice != null) {
+            houses = houseService.searchHouses(location, maxPrice);
+        } else {
+            houses = houseService.searchHouses(location);
+        }
+        return ResponseEntity.ok(houses);
     }
 
     @GetMapping("/{id}")

@@ -52,6 +52,15 @@ public class HouseServiceImpl implements HouseService {
                 .collect(Collectors.toList());
     }
 
+    // ✅ SEARCH METHOD WITHOUT maxPrice (Only by location)
+    @Override
+    public List<HouseDTO> searchHouses(String location) {
+        return houseRepository.findByLocation(location).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ SEARCH METHOD WITH maxPrice
     @Override
     public List<HouseDTO> searchHouses(String location, double maxPrice) {
         return houseRepository.findByLocationAndPriceLessThanEqual(location, maxPrice).stream()

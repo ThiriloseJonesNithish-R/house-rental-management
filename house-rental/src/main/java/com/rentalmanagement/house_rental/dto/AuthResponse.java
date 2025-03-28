@@ -1,15 +1,14 @@
 package com.rentalmanagement.house_rental.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
-@AllArgsConstructor  // ✅ Ensures the constructor exists
 public class AuthResponse {
     private String token;
     private String role;
+    private String message; // ✅ Added success message
 }

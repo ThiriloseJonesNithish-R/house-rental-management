@@ -3,13 +3,14 @@ package com.rentalmanagement.house_rental.controller;
 import com.rentalmanagement.house_rental.dto.AuthRequest;
 import com.rentalmanagement.house_rental.dto.AuthResponse;
 import com.rentalmanagement.house_rental.dto.RegisterRequest;
+import com.rentalmanagement.house_rental.dto.MessageResponse; // ✅ Import the new DTO
 import com.rentalmanagement.house_rental.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth") // ✅ Fixed path to match SecurityConfig
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @CrossOrigin("*") // ✅ Allow all origins temporarily for testing
 public class AuthController {
@@ -17,9 +18,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<MessageResponse> register(@RequestBody RegisterRequest request) { // ✅ Updated return type
         System.out.println("✅ Register API called: " + request);
-        AuthResponse response = authService.register(request);
+        MessageResponse response = authService.register(request);
         System.out.println("✅ Register API response: " + response);
         return ResponseEntity.ok(response);
     }

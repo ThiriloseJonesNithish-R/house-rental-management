@@ -6,11 +6,13 @@ import java.util.List;
 public interface HouseService {
     HouseDTO addHouse(HouseDTO houseDTO);
 
-    void removeHouse(Long id); // Make sure this matches the implementation
+    void removeHouse(Long id);
 
     List<HouseDTO> getAllHouses();
 
     List<HouseDTO> searchHouses(String location, double maxPrice);
 
-    HouseDTO getHouseById(Long id); // Make sure this matches the implementation
+    List<HouseDTO> searchHouses(String location); // ✅ Added overloaded method to allow search without maxPrice
+
+    HouseDTO getHouseById(Long id);
 }
