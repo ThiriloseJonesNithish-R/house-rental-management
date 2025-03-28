@@ -45,9 +45,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/register").permitAll()
 
                         // ✅ Allow house search & details for everyone
-                        .requestMatchers(HttpMethod.GET, "/api/houses", "/api/houses/search", "/api/houses/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/houses", "/api/houses/search", "/api/houses/{id}")
+                        .permitAll()
 
                         // 🔐 Secure all other API endpoints
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 🔐 Future Admin routes
                         .requestMatchers("/api/**").authenticated()
 
                         // ✅ Allow other public pages
