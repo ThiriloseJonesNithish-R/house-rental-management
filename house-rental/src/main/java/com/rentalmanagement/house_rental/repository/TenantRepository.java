@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
 
     // 🔹 FIX: Add method to check if a tenant with same name & contact exists
-    Optional<Tenant> findByNameAndContact(String name, String contact);
+    Optional<Tenant> findByNameAndUserContact(String name, String contact);
     Optional<Tenant> findByUserId(Long userId);
 
 }

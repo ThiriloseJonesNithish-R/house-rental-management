@@ -37,23 +37,28 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Only POST allowed for login, GET blocked
+                        // ✅ Auth endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/login").denyAll() // ❌ Block GET login
-
-                        // ✅ Register remains open
+                        .requestMatchers(HttpMethod.GET, "/api/auth/login").denyAll()
                         .requestMatchers("/api/auth/register").permitAll()
 
-                        // ✅ Allow house search & details for everyone
-                        .requestMatchers(HttpMethod.GET, "/api/houses", "/api/houses/search", "/api/houses/{id}")
-                        .permitAll()
+                        // ✅ Public house reads
+                        .requestMatchers(HttpMethod.GET, "/api/houses", "/api/houses/search", "/api/houses/**").permitAll()
 
-                        // 🔐 Secure all other API endpoints
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 🔐 Future Admin routes
+                        // 🔐 Owner-only writes for houses
+                        .requestMatchers(HttpMethod.POST,   "/api/houses/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT,    "/api/houses/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/houses/**").hasRole("OWNER")
+
+                        // 🔐 Admin (future)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 🔐 Everything else must be authenticated
                         .requestMatchers("/api/**").authenticated()
 
-                        // ✅ Allow other public pages
-                        .requestMatchers("/**").permitAll())
+                        // ✅ Other public pages
+                        .requestMatchers("/**").permitAll()
+                )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -74,16 +79,16 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ FINAL CORS ALLOW-ALL FOR TESTING
+    // ✅ Allow-all CORS (testing)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOriginPattern("*"); // ✅ ALLOW ANY ORIGIN
+        config.addAllowedOriginPattern("*");
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*")); // Or specify "Authorization", "Content-Type"
-        config.setAllowCredentials(true); // If you need cookies/sessions; otherwise false
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);
         return source;

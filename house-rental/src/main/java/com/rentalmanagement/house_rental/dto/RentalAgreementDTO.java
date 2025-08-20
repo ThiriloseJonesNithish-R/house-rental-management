@@ -2,6 +2,7 @@ package com.rentalmanagement.house_rental.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor // ✅ This generates the required constructor automatically
+@ToString
 public class RentalAgreementDTO {
     private Long id;
     private Long houseId;

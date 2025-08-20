@@ -15,4 +15,6 @@ public interface RentalAgreementRepository extends JpaRepository<RentalAgreement
 
     // 🔹 FIX: Add method to check if agreement exists for a house & tenant
     Optional<RentalAgreement> findByHouseIdAndTenantId(Long houseId, Long tenantId);
+
+    boolean existsByHouseId(Long houseId);
 }

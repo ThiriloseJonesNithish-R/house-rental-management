@@ -1,10 +1,14 @@
 package com.rentalmanagement.house_rental.service;
 
 import com.rentalmanagement.house_rental.dto.HouseDTO;
+import com.rentalmanagement.house_rental.dto.MessageResponse;
+
 import java.util.List;
 
 public interface HouseService {
     HouseDTO addHouse(HouseDTO houseDTO);
+
+    MessageResponse updateHouse(Long id, HouseDTO houseDTO);
 
     void removeHouse(Long id);
 

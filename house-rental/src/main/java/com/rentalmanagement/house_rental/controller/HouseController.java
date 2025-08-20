@@ -1,6 +1,7 @@
 package com.rentalmanagement.house_rental.controller;
 
 import com.rentalmanagement.house_rental.dto.HouseDTO;
+import com.rentalmanagement.house_rental.dto.MessageResponse;
 import com.rentalmanagement.house_rental.service.HouseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,14 @@ public class HouseController {
         return ResponseEntity.ok(houseService.addHouse(houseDTO));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<MessageResponse> updateHouse(@PathVariable Long id, @RequestBody HouseDTO houseDTO) {
+        MessageResponse response = houseService.updateHouse(id, houseDTO);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeHouse(@PathVariable Long id) { // Ensure the parameter type is Long
+    public ResponseEntity<Void> removeHouse(@PathVariable Long id) {
         houseService.removeHouse(id);
         return ResponseEntity.ok().build();
     }
@@ -36,7 +43,7 @@ public class HouseController {
     @GetMapping("/search")
     public ResponseEntity<List<HouseDTO>> searchHouses(
             @RequestParam String location,
-            @RequestParam(required = false) Double maxPrice) { // ✅ Made maxPrice OPTIONAL
+            @RequestParam(required = false) Double maxPrice) {
         List<HouseDTO> houses;
         if (maxPrice != null) {
             houses = houseService.searchHouses(location, maxPrice);
@@ -47,7 +54,7 @@ public class HouseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HouseDTO> getHouseById(@PathVariable Long id) { // Ensure the parameter type is Long
+    public ResponseEntity<HouseDTO> getHouseById(@PathVariable Long id) {
         return ResponseEntity.ok(houseService.getHouseById(id));
     }
 }

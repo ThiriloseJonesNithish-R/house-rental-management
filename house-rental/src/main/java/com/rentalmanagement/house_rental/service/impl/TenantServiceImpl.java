@@ -38,7 +38,7 @@ public class TenantServiceImpl implements TenantService {
         // ✅ Create and associate the Tenant with the User
         Tenant tenant = new Tenant();
         tenant.setName(tenantDTO.getName());
-        tenant.setContact(tenantDTO.getContact());
+        user.setContact(tenantDTO.getContact());
         tenant.setPreferredLocation(tenantDTO.getPreferredLocation());
         tenant.setUser(user); // ✅ Link user to tenant
 
@@ -68,6 +68,6 @@ public class TenantServiceImpl implements TenantService {
     }
 
     private TenantDTO convertToDTO(Tenant tenant) {
-        return new TenantDTO(tenant.getId(), tenant.getName(), tenant.getContact(), tenant.getPreferredLocation());
+        return new TenantDTO(tenant.getId(), tenant.getName(), tenant.getUser().getContact(), tenant.getPreferredLocation());
     }
 }

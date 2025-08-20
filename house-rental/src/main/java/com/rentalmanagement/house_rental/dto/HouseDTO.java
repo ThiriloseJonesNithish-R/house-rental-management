@@ -2,6 +2,7 @@ package com.rentalmanagement.house_rental.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -9,10 +10,13 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class HouseDTO {
     private Long id;
     private String location;
     private double price;
     private int bedrooms;
-    private String owner;
+
+    // ✅ Only for responses, not required in requests
+    private String ownerName;
 }

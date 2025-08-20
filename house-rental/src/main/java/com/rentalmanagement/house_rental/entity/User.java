@@ -30,6 +30,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false, unique = true)
+    private String contact;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Tenant tenant;
 
